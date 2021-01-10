@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import * as Feather from 'react-feather';
 import { connect } from 'react-redux';
-import { authActions } from '../../actions';
+// import { authActions } from '../../../actions';
 import { withStyles  } from '@material-ui/core/styles';
 import {
     Link
@@ -63,14 +63,24 @@ const useStyles = theme => ({
     }
 });
 
-class Login extends React.Component {
+class Signup extends React.Component {
     constructor(props){
         super(props);
 
         this.state = {
             username: "",
             password: "",
+            first_name: "",
+            last_name: "",
             error: {
+                first_name: {
+                    status: false,
+                    message: "Please input First Name"
+                },
+                last_name: {
+                    status: false,
+                    message: "Please input Last Name"
+                },
                 username: {
                     status: false,
                     message: "Please input username"
@@ -97,10 +107,18 @@ class Login extends React.Component {
         if (this.state.username && this.state.password) {
             this.setState(prevState => ({
                 error: {
-                    ...prevState.error,           // copy all other key-value pairs of food object
-                    username: {                     // specific object of food object
-                        ...prevState.error.username,   // copy all pizza key-value pairs
-                        status: false          // update value of specific key
+                    ...prevState.error,
+                    fist_name: {
+                        ...prevState.error.fist_name,
+                        status: false
+                    },
+                    last_name: {
+                        ...prevState.error.last_name,
+                        status: false
+                    },
+                    username: {
+                        ...prevState.error.username,
+                        status: false
                     },
                     password: {
                         ...prevState.error.password,
@@ -115,14 +133,22 @@ class Login extends React.Component {
                 password: this.state.password,
                 role: "employer"
             }
-            dispatch(authActions.login(credentials));
+            // dispatch(authActions.register(credentials));
         }else{
             this.setState(prevState => ({
                 error: {
-                    ...prevState.error,           // copy all other key-value pairs of food object
-                    username: {                     // specific object of food object
-                        ...prevState.error.username,   // copy all pizza key-value pairs
-                        status: true          // update value of specific key
+                    ...prevState.error,
+                    first_name: {
+                        ...prevState.error.first_name,
+                        status: true
+                    },
+                    last_name: {
+                        ...prevState.error.last_name,
+                        status: true
+                    },
+                    username: {
+                        ...prevState.error.username,
+                        status: true
                     },
                     password: {
                         ...prevState.error.password,
@@ -156,6 +182,18 @@ class Login extends React.Component {
                                         <CardContent>
                                             <form noValidate autoComplete="off">
                                                 <div>
+                                                    <InputLabel htmlFor="first_name" className="text-black pb10 font500">First Name</InputLabel>
+                                                    <TextField id="outlined-basic" InputLabelProps={{
+                                                        shrink: true,
+                                                    }} error={this.state.error.first_name.status} helperText={this.state.error.first_name.status ? this.state.error.first_name.message : ''} type="text" className="full-width" label=""  id="first_name" name="first_name" value={this.state.first_name} onChange={this.onChange} variant="outlined" />
+                                                </div>
+                                                <div className="pt1">
+                                                    <InputLabel htmlFor="last_name" className="text-black pb10 font500">Last Name</InputLabel>
+                                                    <TextField id="outlined-basic" InputLabelProps={{
+                                                        shrink: true,
+                                                    }} error={this.state.error.last_name.status} helperText={this.state.error.last_name.status ? this.state.error.last_name.message : ''} type="text" className="full-width" label=""  id="last_name" name="last_name" value={this.state.last_name} onChange={this.onChange} variant="outlined" />
+                                                </div>
+                                                <div className="pt1">
                                                     <InputLabel htmlFor="username" className="text-black pb10 font500">Username</InputLabel>
                                                     <TextField id="outlined-basic" InputLabelProps={{
                                                         shrink: true,
@@ -168,28 +206,15 @@ class Login extends React.Component {
                                                     }} error={this.state.error.password.status} helperText={this.state.error.password.status ? this.state.error.password.message : ''} type="password" className="full-width" label="" id="password" name="password" value={this.state.password} onChange={this.onChange} variant="outlined" />
                                                 </div>
                                             </form>
-                                            <div>
-                                                <FormControlLabel
-                                                    control={
-                                                        <Checkbox
-                                                            color="primary"
-                                                            name="accept"
-                                                        />
-                                                    }
-                                                    label="Remember me"
-                                                />
-
-                                                <Typography className="pull-right pt05 font500"><Link to="/">Forgot Password?</Link></Typography>
-                                            </div>
                                         </CardContent>
                                         <CardActions className={classes.cardFooter}>
-                                            <Button variant="contained" className={classes.btnExtraLarge} color="primary">
-                                                <Link className="font600" to="/dashboard">Login</Link>
+                                            <Button variant="contained" className={classes.btnExtraLarge} color="primary" onClick={this.onSubmit}>
+                                                Register
                                             </Button>
                                         </CardActions>
                                         <div className="text-center mt-10">
                                             <Typography variant="overline">
-                                                Don't have an account? <Link to="/register" className="font600">Sign Up</Link>
+                                                Already have an account? <Link to="/login" className="font600">Login</Link>
                                             </Typography>
                                         </div>
                                     </div>
@@ -205,7 +230,7 @@ class Login extends React.Component {
     }
 }
 
-Login.propTypes = {
+Signup.propTypes = {
     classes: PropTypes.object.isRequired,
 };
 
@@ -217,4 +242,4 @@ function mapStateToProps(state) {
     };
 }
 
-export default connect(mapStateToProps)(withStyles(useStyles)(Login));
+export default connect(mapStateToProps)(withStyles(useStyles)(Signup));
