@@ -15,18 +15,25 @@ import { PublicRoute } from './components/PublicRouter';
 import Login from './components/pages/Login';
 import Signup from './components/pages/registration/Signup';
 import Dashboard from './components/pages/Dashboard';
+import Cart from './components/pages/Cart';
+import Header from './components/layouts/Header';
 
 function App() {
+    const location = useLocation();
+    console.log(location.pathname);
     return (
         <React.Fragment>
+            {location.pathname !== '/' &&
+                <Header/>
+            }
                 <Switch >
                     <Route path="/" exact>
                         <Login />
                     </Route>
 
-                    <PublicRoute path="/login" component={Login}></PublicRoute>
                     <PublicRoute path="/register" component={Signup}></PublicRoute>
                     <PublicRoute path="/dashboard" component={Dashboard} />
+                    <PublicRoute path="/cart" component={Cart} />
                 </Switch>
         </React.Fragment>
     );

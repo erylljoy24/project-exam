@@ -1,51 +1,8 @@
 import React, { Component } from 'react';
 import axios from 'axios'
-import ReactPaginate from 'react-paginate';
-import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
-import {withStyles} from "@material-ui/core";
 import Container from "@material-ui/core/Container/Container";
-import Card from "@material-ui/core/Card/Card";
-import CardActionArea from "@material-ui/core/CardActionArea/CardActionArea";
-import CardMedia from "@material-ui/core/CardMedia/CardMedia";
-import CardContent from "@material-ui/core/CardContent/CardContent";
-import Typography from "@material-ui/core/Typography/Typography";
 import Grid from "@material-ui/core/Grid/Grid";
-
-
-const useStyles = theme => ({
-    backdrop: {
-        zIndex: theme.zIndex.drawer + 1,
-        color: '#fff',
-        position: 'absolute',
-        left: '0',
-        right: '0',
-        top: '0',
-        bottom: '0',
-        backgroundColor: 'rgba(255, 255, 255, 0.85)'
-    },
-    loadingProgress: {
-        zIndex: theme.zIndex.drawer + 2
-    },
-    containerBackdrop: {
-        position: 'relative'
-    },
-    cardBody: {
-        padding: theme.spacing(5),
-    },
-    cardFooter: {
-        display: 'block !important',
-        textAlign: 'center'
-    },
-    btnExtraLarge: {
-        height: 60,
-        padding: '0 50px'
-    },
-    loginContainer: {
-        paddingLeft: '80px',
-        paddingRight: '80px'
-    }
-});
+import { GridListView } from "../custom";
 
 export default class Dashboard extends React.Component {
     constructor(props) {
@@ -107,35 +64,11 @@ export default class Dashboard extends React.Component {
     }
     receivedData() {
         axios
-            .get(`https://jsonplaceholder.typicode.com/photos`)
+            .get(`https://api.mocki.io/v1/7a85ca5d`)
             .then(res => {
 
                 const data = res.data;
-                const slice = data.slice(this.state.offset, this.state.offset + this.state.perPage)
-
-                const postData = slice.map(pd =>
-                    <Grid container spacing={3}>
-                        <Grid item xs={3} key={pd.id}>
-                            <Card>
-                                <CardActionArea>
-                                    <CardMedia
-                                        image={pd.thumbnailUrl}
-                                        style={{ height: '200px' }}
-                                    />
-                                    <CardContent style={{backgroundColor:'#273161'}}>
-                                        <Typography style={{color:'#ffffff', fontWeight:'bold'}}>{pd.title}</Typography>
-                                    </CardContent>
-                                </CardActionArea>
-                            </Card>
-                        </Grid>
-                    </Grid>
-                )
-
-                this.setState({
-                    pageCount: Math.ceil(data.length / this.state.perPage),
-
-                    postData
-                })
+                this.setState({ data: data})
             });
     }
     handlePageClick = (e) => {
@@ -155,22 +88,12 @@ export default class Dashboard extends React.Component {
         this.receivedData()
     }
     render() {
+        console.log(this.state.data);
         return (
             <Container maxWidth="md">
                 <div style={{alignItems: 'center'}}>
-                    {this.state.postData}
-                    <ReactPaginate
-                        previousLabel={"prev"}
-                        nextLabel={"next"}
-                        breakLabel={"..."}
-                        breakClassName={"break-me"}
-                        pageCount={this.state.pageCount}
-                        marginPagesDisplayed={2}
-                        pageRangeDisplayed={5}
-                        onPageChange={this.handlePageClick}
-                        containerClassName={"pagination"}
-                        subContainerClassName={"pages pagination"}
-                        activeClassName={"active"}/>
+                    <Grid style={{marginTop: 100}}/>
+                    <GridListView lists={this.state.data} />
                 </div>
             </Container>
 

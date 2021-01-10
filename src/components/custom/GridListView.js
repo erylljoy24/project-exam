@@ -18,11 +18,11 @@ export default function GridListView(props) {
                         <Card>
                             <CardActionArea>
                                 <CardMedia
-                                    image={list.img}
+                                    image={list.thumbnailUrl}
                                     style={{ height: '200px' }}
                                 />
                                 <CardContent style={{backgroundColor:'#273161'}}>
-                                    <Typography style={{color:'#ffffff', fontWeight:'bold'}}>{list.name}</Typography>
+                                    <Typography style={{color:'#ffffff', fontWeight:'bold'}}>{list.title}</Typography>
                                 </CardContent>
                             </CardActionArea>
                         </Card>
