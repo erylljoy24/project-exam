@@ -1,7 +1,5 @@
 import React, { Component } from 'react';
-import * as Feather from 'react-feather';
 import { connect } from 'react-redux';
-// import { authActions } from '../../../actions';
 import { withStyles  } from '@material-ui/core/styles';
 import {
     Link
@@ -20,16 +18,13 @@ import Box from '@material-ui/core/Box';
 import TextField from '@material-ui/core/TextField';
 import Alert from '@material-ui/lab/Alert';
 import Container from '@material-ui/core/Container';
-import Divider from '@material-ui/core/Divider';
 import Backdrop from '@material-ui/core/Backdrop';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Toolbar from "@material-ui/core/Toolbar";
 import Typography from '@material-ui/core/Typography';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Checkbox from '@material-ui/core/Checkbox';
 import InputLabel from '@material-ui/core/InputLabel';
-import axios from "axios";
-import { history } from '../../../helpers/history';
+import { makeStyles } from '@material-ui/core/styles';
+import axios from 'axios'
 
 const useStyles = theme => ({
     backdrop: {
@@ -65,31 +60,21 @@ const useStyles = theme => ({
     }
 });
 
-class Signup extends React.Component {
+class AddItem extends React.Component {
     constructor(props){
         super(props);
 
         this.state = {
-            username: "",
-            password: "",
-            first_name: "",
-            last_name: "",
+            item_name: "",
+            item_price: "",
             error: {
-                first_name: {
+                item_name: {
                     status: false,
-                    message: "Please input First Name"
+                    message: "Please input Item Name"
                 },
-                last_name: {
+                item_price: {
                     status: false,
-                    message: "Please input Last Name"
-                },
-                username: {
-                    status: false,
-                    message: "Please input username"
-                },
-                password: {
-                    status: false,
-                    message: "Please input password"
+                    message: "Please input Item Price"
                 }
             },
             open: true
@@ -106,41 +91,29 @@ class Signup extends React.Component {
     onSubmit(e) {
         e.preventDefault();
 
-        if (this.state.username && this.state.password) {
+        if (this.state.item_name && this.state.item_price) {
             var bodyFormData = new FormData();
-            bodyFormData.append('username', this.state.username);
-            bodyFormData.append('password', this.state.password);
-            bodyFormData.append('first_name', this.state.first_name);
-            bodyFormData.append('last_name', this.state.last_name);
+            bodyFormData.append('name', this.state.item_name);
+            bodyFormData.append('price', this.state.item_price);
+            bodyFormData.append('user_id', localStorage.getItem('user_id'));
+            bodyFormData.append('image', '/logo512.png');
             axios
-                .post(`http://localhost:8080/user_auth/register_once`,bodyFormData)
+                .post(`http://localhost:8080/menu/save_menu`,bodyFormData)
                 .then(res => {
-                    localStorage.setItem('user_id', res.data[0].user_id);
-                    localStorage.setItem('username', res.data[0].username);
-                    localStorage.setItem('token', res.data[0].token);
-
-                    console.log(localStorage.getItem('user_id'));
-
-                    history.push('/dashboard');
+                    const data = res.data;
+                    console.log(data);
+                    // this.setState({ data: data})
                 });
         }else{
             this.setState(prevState => ({
                 error: {
                     ...prevState.error,
-                    first_name: {
-                        ...prevState.error.first_name,
+                    item_name: {
+                        ...prevState.error.item_name,
                         status: true
                     },
-                    last_name: {
-                        ...prevState.error.last_name,
-                        status: true
-                    },
-                    username: {
-                        ...prevState.error.username,
-                        status: true
-                    },
-                    password: {
-                        ...prevState.error.password,
+                    item_price: {
+                        ...prevState.error.item_price,
                         status: true
                     }
                 }
@@ -149,7 +122,7 @@ class Signup extends React.Component {
     }
 
     render() {
-        const { loggingIn, message, classes } = this.props;
+        const { message, classes } = this.props;
         return (
             <Container className={`${classes.loginContainer} page-padding mb4`} maxWidth="md">
                 <Toolbar/>
@@ -162,8 +135,8 @@ class Signup extends React.Component {
 
                             <Paper elevation={3}>
                                 <Card className={classes.containerBackdrop}>
-                                    { loggingIn ? <LinearProgress className={classes.loadingProgress} /> : '' }
-                                    <Backdrop className={classes.backdrop} open={loggingIn}>
+
+                                    <Backdrop className={classes.backdrop}>
                                         <CircularProgress color="inherit" />
                                     </Backdrop>
                                     <div className={classes.cardBody}>
@@ -171,39 +144,42 @@ class Signup extends React.Component {
                                         <CardContent>
                                             <form noValidate autoComplete="off">
                                                 <div>
-                                                    <InputLabel htmlFor="first_name" className="text-black pb10 font500">First Name</InputLabel>
+                                                    <InputLabel htmlFor="first_name" className="text-black pb10 font500">Item Name</InputLabel>
                                                     <TextField id="outlined-basic" InputLabelProps={{
                                                         shrink: true,
-                                                    }} error={this.state.error.first_name.status} helperText={this.state.error.first_name.status ? this.state.error.first_name.message : ''} type="text" className="full-width" label=""  id="first_name" name="first_name" value={this.state.first_name} onChange={this.onChange} variant="outlined" />
+                                                    }} type="text" className="full-width" label=""  id="item_name" name="item_name" value={this.state.first_name} onChange={this.onChange} variant="outlined" />
                                                 </div>
                                                 <div className="pt1">
-                                                    <InputLabel htmlFor="last_name" className="text-black pb10 font500">Last Name</InputLabel>
+                                                    <InputLabel htmlFor="last_name" className="text-black pb10 font500">Price</InputLabel>
                                                     <TextField id="outlined-basic" InputLabelProps={{
                                                         shrink: true,
-                                                    }} error={this.state.error.last_name.status} helperText={this.state.error.last_name.status ? this.state.error.last_name.message : ''} type="text" className="full-width" label=""  id="last_name" name="last_name" value={this.state.last_name} onChange={this.onChange} variant="outlined" />
+                                                    }} type="text" className="full-width" label=""  id="item_price" name="item_price" value={this.state.item_price} onChange={this.onChange} variant="outlined" />
                                                 </div>
                                                 <div className="pt1">
-                                                    <InputLabel htmlFor="username" className="text-black pb10 font500">Username</InputLabel>
-                                                    <TextField id="outlined-basic" InputLabelProps={{
-                                                        shrink: true,
-                                                    }} error={this.state.error.username.status} helperText={this.state.error.username.status ? this.state.error.username.message : ''} type="text" className="full-width" label=""  id="username" name="username" value={this.state.username} onChange={this.onChange} variant="outlined" />
-                                                </div>
-                                                <div className="pt1">
-                                                    <InputLabel htmlFor="password" className="text-black pb10 font500">Password</InputLabel>
-                                                    <TextField id="outlined-basic" InputLabelProps={{
-                                                        shrink: true,
-                                                    }} error={this.state.error.password.status} helperText={this.state.error.password.status ? this.state.error.password.message : ''} type="password" className="full-width" label="" id="password" name="password" value={this.state.password} onChange={this.onChange} variant="outlined" />
+                                                    <div>
+                                                        <input
+                                                            accept="image/*"
+                                                            style={{ display: 'none' }}
+                                                            id="profile-image"
+                                                            multiple
+                                                            type="file"
+                                                        />
+                                                        <label htmlFor="profile-image">
+                                                            <Button variant="contained" component="span" color="primary">
+                                                                Upload new picture
+                                                            </Button>
+                                                        </label>
+                                                    </div>
                                                 </div>
                                             </form>
                                         </CardContent>
                                         <CardActions className={classes.cardFooter}>
                                             <Button variant="contained" className={classes.btnExtraLarge} color="primary" onClick={this.onSubmit}>
-                                                Register
+                                                Add Item
                                             </Button>
                                         </CardActions>
                                         <div className="text-center mt-10">
                                             <Typography variant="overline">
-                                                Already have an account? <Link to="/" className="font600">Login</Link>
                                             </Typography>
                                         </div>
                                     </div>
@@ -219,16 +195,8 @@ class Signup extends React.Component {
     }
 }
 
-Signup.propTypes = {
+AddItem.propTypes = {
     classes: PropTypes.object.isRequired,
 };
 
-function mapStateToProps(state) {
-    const { loggingIn, message } = state.authentication;
-    return {
-        loggingIn,
-        message
-    };
-}
-
-export default connect(mapStateToProps)(withStyles(useStyles)(Signup));
+export default withStyles(useStyles)(AddItem);

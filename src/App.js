@@ -17,6 +17,8 @@ import Signup from './components/pages/registration/Signup';
 import Dashboard from './components/pages/Dashboard';
 import Cart from './components/pages/Cart';
 import Header from './components/layouts/Header';
+import AddItem from './components/pages/AddItem';
+import ViewMyItems from './components/pages/ViewMyItems';
 
 function App() {
     const location = useLocation();
@@ -33,6 +35,8 @@ function App() {
 
                     <PublicRoute path="/register" component={Signup}></PublicRoute>
                     <PublicRoute path="/dashboard" component={Dashboard} />
+                    <PublicRoute path="/add_item" component={AddItem} />
+                    <PublicRoute path="/view_my_items" component={ViewMyItems} />
                     <PublicRoute path="/cart" component={Cart} />
                 </Switch>
         </React.Fragment>

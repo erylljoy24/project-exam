@@ -40,7 +40,7 @@ const useStyles = makeStyles((theme) => ({
         padding: 25
     },
     btnExtraLarge: {
-        height: 50,
+        height: 30,
         padding: '0 50px',
         marginTop: '15px'
     },
@@ -50,8 +50,8 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-export default function ListItem(props) {
-    const { items, addQuantity, minusQuantity } = props;
+export default function MyListItem(props) {
+    const { items, itemDelete } = props;
     const classes = useStyles();
 
     return (
@@ -66,30 +66,11 @@ export default function ListItem(props) {
                             <Grid item xs={7} className={classes.bodyContentSpacing}>
                                 <CardContent>
                                     <Grid container spacing={0} style={{width: 150, display: 'flex', alignItems: 'center'}}>
-                                        <Grid item xs={3}>
-                                            <IconButton type="submit" onClick={() => minusQuantity(item)}>
-                                                <RemoveIcon />
-                                            </IconButton>
-                                        </Grid>
-                                        <Grid item xs={3} className={classes.colorText} style={{textAlign: 'center'}}>
-                                            {item.quantity}
-                                        </Grid>
-                                        <Grid item xs={3}>
-                                            <IconButton type="submit" onClick={() => addQuantity(item)}>
-                                                <AddIcon />
-                                            </IconButton>
-                                        </Grid>
 
-                                        <Grid item xs={3}>
-
-                                        </Grid>
                                     </Grid>
                                     <Typography variant="h5" className={classes.colorText}>{item.name}</Typography>
-                                    <Typography variant="h5" className={classes.colorText}>
-                                        ${(parseInt(item.quantity*item.price))}
-                                    </Typography>
-                                    <Button variant="contained" uppercase={false} className={classes.btnExtraLarge} color="primary">
-                                        Read Article
+                                    <Button variant="contained" uppercase={false} className={classes.btnExtraLarge} onClick={() => itemDelete(item)} color="primary">
+                                        Delete Item
                                     </Button>
                                 </CardContent>
                             </Grid>

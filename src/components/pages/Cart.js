@@ -4,8 +4,41 @@ import Container from "@material-ui/core/Container/Container";
 import Grid from "@material-ui/core/Grid/Grid";
 import { GridListView } from "../custom";
 import { ListItem } from "../custom";
+import Button from "@material-ui/core/Button/Button";
+import {withStyles} from "@material-ui/core";
+import PropTypes from "prop-types";
 
-export default class Cart extends React.Component {
+const useStyles = theme => ({
+    backdrop: {
+        zIndex: theme.zIndex.drawer + 1,
+        color: '#fff',
+        position: 'absolute',
+        left: '0',
+        right: '0',
+        top: '0',
+        bottom: '0',
+        backgroundColor: 'rgba(255, 255, 255, 0.85)'
+    },
+    loadingProgress: {
+        zIndex: theme.zIndex.drawer + 2
+    },
+    containerBackdrop: {
+        position: 'relative'
+    },
+    cardBody: {
+        padding: theme.spacing(5),
+    },
+    cardFooter: {
+        display: 'block !important',
+        textAlign: 'center'
+    },
+    btnExtraLarge: {
+        height: 60,
+        padding: '0 50px'
+    }
+});
+
+class Cart extends React.Component {
     constructor(props) {
         super(props);
 
@@ -14,49 +47,7 @@ export default class Cart extends React.Component {
             data: [],
             perPage: 10,
             currentPage: 0,
-
-            works: [
-                {
-                    id: 1,
-                    name: "Social Media Virtual Assistants",
-                    img: "/images/admin.jpg"
-                },
-                {
-                    id: 2,
-                    name: "Remote Programmer & Developers",
-                    img: "/images/web-development.jpg"
-                },
-                {
-                    id: 3,
-                    name: "Filipino Graphic Designer",
-                    img: "/images/graphics.jpg"
-                },
-                {
-                    id: 4,
-                    name: "Amazon Virtual Assistant",
-                    img: "/images/admin.jpg"
-                },
-                {
-                    id: 5,
-                    name: "General Virtual Assistant",
-                    img: "/images/admin.jpg"
-                },
-                {
-                    id: 6,
-                    name: "SEO Experts / Digital Marketers",
-                    img: "/images/marketing.jpg"
-                },
-                {
-                    id: 7,
-                    name: "Accountants / Bookkeepers",
-                    img: "/images/writing.jpg"
-                },
-                {
-                    id: 8,
-                    name: "Telemarketing / Callcenter / BPO",
-                    img: "/images/webmaster.jpg"
-                },
-            ]
+            quantity: 0
         };
 
         this.handlePageClick = this
@@ -66,7 +57,7 @@ export default class Cart extends React.Component {
 
     receivedData() {
         axios
-            .get(`https://api.mocki.io/v1/7a85ca5d`)
+            .get(`http://localhost:8080/cart/get_cart_item/`+localStorage.getItem('user_id'))
             .then(res => {
 
                 const data = res.data;
@@ -87,20 +78,62 @@ export default class Cart extends React.Component {
 
     };
 
+    addQuantity(item){
+        console.log(item.quantity);
+        var bodyFormData = new FormData();
+        bodyFormData.append('cart_id', item.cart_id);
+        bodyFormData.append('quantity', parseInt(item.quantity)+1);
+        axios
+            .post(`http://localhost:8080/cart/update_cart`,bodyFormData)
+            .then(res => {
+
+                window.location.reload()
+            });
+
+    }
+
+    minusQuantity(item){
+        var bodyFormData = new FormData();
+        bodyFormData.append('cart_id', item.cart_id);
+        bodyFormData.append('quantity', parseInt(item.quantity)-1);
+        axios
+            .post(`http://localhost:8080/cart/update_cart`,bodyFormData)
+            .then(res => {
+
+                window.location.reload()
+            });
+    }
+
     componentDidMount() {
         this.receivedData()
     }
     render() {
         console.log(this.state.data);
+        const { classes } = this.props;
         return (
-            <Container maxWidth="md">
+
+            <Container maxWidth="md" style={{textAlign: 'center'}}>
                 <div style={{alignItems: 'center'}}>
                     <Grid style={{marginTop: 100}}/>
-                    <ListItem items={this.state.data} />
+                    <ListItem
+                        items={this.state.data}
+                        addQuantity={this.addQuantity}
+                        minusQuantity={this.minusQuantity}
+                    />
                 </div>
+
+                <Button variant="contained" uppercase={false} className={classes.btnExtraLarge} color="primary">
+                    Place Order
+                </Button>
             </Container>
 
 
         )
     }
 }
+
+Cart.propTypes = {
+    classes: PropTypes.object.isRequired,
+};
+
+export default withStyles(useStyles)(Cart);

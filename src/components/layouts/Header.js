@@ -7,14 +7,17 @@ import IconButton from '@material-ui/core/IconButton';
 import MenuItem from '@material-ui/core/MenuItem';
 import Menu from '@material-ui/core/Menu';
 import Badge from '@material-ui/core/Badge';
-import NotificationsIcon from '@material-ui/icons/Notifications';
 import Avatar from '@material-ui/core/Avatar';
 import PropTypes from 'prop-types';
 import { authActions } from '../../actions';
+import ShoppingCartIcon from '@material-ui/icons/ShoppingCart';
+import { history } from '../../helpers/history';
+import HomeIcon from '@material-ui/icons/Home';
 
 import {
     Link, Redirect
 } from "react-router-dom";
+import axios from "axios";
 const useStyles = theme => ({
     root: {
         flexGrow: 1,
@@ -68,33 +71,93 @@ const useStyles = theme => ({
 });
 
 class Header extends Component {
+
     constructor(props){
         super(props);
 
+        this.handleMenu = this.handleMenu.bind(this);
+        this.handleClose = this.handleClose.bind(this);
 
+        this.state = {
+            anchorEl: null,
+            isOpen: false,
+            data:   []
+        }
     }
 
     logoutUser(e){
         e.preventDefault();
+        localStorage.clear();
+        history.push('/');
+    };
 
-        const { dispatch } = this.props;
+    addItemView(e){
+        e.preventDefault();
+        history.push('/add_item');
+    };
+
+    viewMyItems(e){
+        e.preventDefault();
+        history.push('/view_my_items');
+    };
+
+    toDashboard(e){
+        e.preventDefault();
+        history.push('/dashboard');
+    }
+    routeChange(e){
+        e.preventDefault();
+        history.push('/cart');
+    }
+
+    handleMenu = (event) => {
+        this.setState({ anchorEl: event.currentTarget });
+        this.setState({ isOpen: true });
+    };
+
+    handleClose = () => {
         this.setState({ anchorEl: null });
         this.setState({ isOpen: false });
-        dispatch(authActions.logout());
     };
+
+    receivedData() {
+        axios
+            .get(`http://localhost:8080/cart/get_cart_item/`+localStorage.getItem('user_id'))
+            .then(res => {
+
+                const data = res.data;
+                this.setState({ data: data})
+            });
+    }
+
+    componentDidMount() {
+        this.receivedData()
+    }
 
     render() {
         const { classes } = this.props;
         return (
             <div  className={classes.root}>
-                <AppBar position="fixed" color="inherit" className={classes.appBar}>
+                <AppBar position="fixed" color="inherit" style={{textAlign:'end', alignItems:'flex-end'}} className={classes.appBar} >
                     <Toolbar>
                         <div className={classes.sectionMobile}>
                             <Typography className={`${classes.menuLink} ${classes.sectionDesktop}`}>
-                                <Link className="text-black" to="/how-it-works-employer">How it Works</Link>
-                                <IconButton aria-label="show 17 new notifications" color="inherit">
-                                    <Badge badgeContent={17} color="primary">
-                                        <NotificationsIcon />
+                                <IconButton
+                                    aria-label="account of current user"
+                                    aria-controls="menu-appbar"
+                                    aria-haspopup="true"
+                                    className={classes.menuAppbar}
+                                    disableFocusRipple={true}
+                                    disableRipple={true}
+                                    onClick={this.toDashboard}
+                                    color="inherit"
+                                >
+                                    <HomeIcon aria-label="Demo" variant="rounded" className={classes.avatar} src="/images/avatar/sample.jpg" ></HomeIcon>
+                                    {/*<Typography variant="body2" className="font500">{user.fullName}</Typography>*/}
+                                </IconButton>
+                                <IconButton onClick={this.routeChange} aria-label="show 17 new notifications" color="inherit">
+                                    <Badge badgeContent={this.state.data.length} color="primary">
+                                        <ShoppingCartIcon />
                                     </Badge>
                                 </IconButton>
                                 <IconButton
@@ -113,6 +176,7 @@ class Header extends Component {
                                 </IconButton>
                                 <Menu
                                     id="menu-appbar"
+                                    anchorEl={this.state.anchorEl}
                                     anchorOrigin={{
                                         vertical: 'top',
                                         horizontal: 'right',
@@ -122,11 +186,14 @@ class Header extends Component {
                                         vertical: 'top',
                                         horizontal: 'right',
                                     }}
+                                    open={this.state.isOpen}
+                                    onClose={this.handleClose}
                                 >
-
+                                    <MenuItem onClick={this.toDashboard}>Dashboard</MenuItem>
+                                    <MenuItem onClick={this.addItemView}>Add Item</MenuItem>
+                                    <MenuItem onClick={this.viewMyItems}>View My Items</MenuItem>
                                     <MenuItem onClick={this.logoutUser}>Logout</MenuItem>
                                 </Menu>
-                                {/* <a href="#" className="text-white" onClick={this.logoutUser}>Logout</a> */}
                             </Typography>
                         </div>
                     </Toolbar>

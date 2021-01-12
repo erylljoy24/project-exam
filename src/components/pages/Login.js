@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, useState } from 'react';
 import * as Feather from 'react-feather';
 import { connect } from 'react-redux';
 import { authActions } from '../../actions';
@@ -28,6 +28,8 @@ import Typography from '@material-ui/core/Typography';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
 import InputLabel from '@material-ui/core/InputLabel';
+import axios from "axios";
+import { history } from '../../helpers/history';
 
 const useStyles = theme => ({
     backdrop: {
@@ -67,6 +69,7 @@ class Login extends React.Component {
     constructor(props){
         super(props);
 
+
         this.state = {
             username: "",
             password: "",
@@ -87,6 +90,7 @@ class Login extends React.Component {
         this.onSubmit = this.onSubmit.bind(this);
     }
 
+
     onChange(e) {
         this.setState({ [e.target.name]: e.target.value });
     }
@@ -95,27 +99,27 @@ class Login extends React.Component {
         e.preventDefault();
 
         if (this.state.username && this.state.password) {
-            this.setState(prevState => ({
-                error: {
-                    ...prevState.error,           // copy all other key-value pairs of food object
-                    username: {                     // specific object of food object
-                        ...prevState.error.username,   // copy all pizza key-value pairs
-                        status: false          // update value of specific key
-                    },
-                    password: {
-                        ...prevState.error.password,
-                        status: false
+            var bodyFormData = new FormData();
+            bodyFormData.append('username', this.state.username);
+            bodyFormData.append('password', this.state.password);
+            axios
+                .post(`http://localhost:8080/user_auth/login`,bodyFormData)
+                .then(res => {
+                    if (res.data){
+                        console.log(res.data[0].user_id);
+                        localStorage.setItem('user_id', res.data[0].user_id);
+                        localStorage.setItem('username', res.data[0].username);
+                        localStorage.setItem('token', res.data[0].token);
+
+                        console.log(localStorage.getItem('user_id'));
+
+                        history.push('/dashboard');
                     }
-                }
-            }));
-            const { dispatch } = this.props;
-            const credentials = {
-                fullName: "Admin",
-                username: this.state.username,
-                password: this.state.password,
-                role: "employer"
-            }
-            dispatch(authActions.login(credentials));
+
+
+                    // let comments = JSON.parse(localStorage.getItem('user')[1]);
+
+                });
         }else{
             this.setState(prevState => ({
                 error: {
@@ -183,8 +187,8 @@ class Login extends React.Component {
                                             </div>
                                         </CardContent>
                                         <CardActions className={classes.cardFooter}>
-                                            <Button variant="contained" className={classes.btnExtraLarge} color="primary">
-                                                <Link className="font600" to="/dashboard">Login</Link>
+                                            <Button variant="contained" className={classes.btnExtraLarge} color="primary" onClick={this.onSubmit}>
+                                                Login
                                             </Button>
                                         </CardActions>
                                         <div className="text-center mt-10">
